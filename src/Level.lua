@@ -160,6 +160,16 @@ function Level:update(dt)
     -- Box2D world update code; resolves collisions and processes callbacks
     self.world:update(dt)
 
+    -- split flying alien if the spacebar is pressed and the alien has been launched,
+    -- but hasn't made contact with an obstacle or already split
+
+    if love.keyboard.keysPressed['space'] and self.launchMarker.launched and
+        not self.contact then
+            if self.launchMarker.alien.canSplit then
+                self.launchMarker.alien:split()
+            end
+    end
+
     -- destroy all bodies we calculated to destroy during the update call
     for k, body in pairs(self.destroyedBodies) do
         if not body:isDestroyed() then 
@@ -201,7 +211,7 @@ function Level:update(dt)
             self.launchMarker.alien.body:destroy()
             self.launchMarker = AlienLaunchMarker(self.world)
 
-            -- reset contact flag for next go
+            -- reset contact flag for next round
             self.contact = false
 
             -- re-initialize level if we have no more aliens

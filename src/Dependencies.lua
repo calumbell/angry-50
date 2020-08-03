@@ -67,6 +67,9 @@ gSounds = {
     ['break5'] = love.audio.newSource('sounds/break5.wav'),
     ['bounce'] = love.audio.newSource('sounds/bounce.wav'),
     ['kill'] = love.audio.newSource('sounds/kill.wav'),
+    
+    -- split sfx credit: https://freesound.org/people/redafs/sounds/379499/
+    ['split'] = love.audio.newSource('sounds/split.wav'),
 
     ['music'] = love.audio.newSource('sounds/music.wav')
 }

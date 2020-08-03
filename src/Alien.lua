@@ -33,10 +33,19 @@ function Alien:init(world, type, x, y, userData)
 
     -- used to keep track of despawning the Alien and flinging it
     self.launched = false
+
+    -- used to keep track of whether the alien has split yet
+    self.canSplit = true
 end
 
 function Alien:render()
     love.graphics.draw(gTextures['aliens'], gFrames['aliens'][self.sprite],
         math.floor(self.body:getX()), math.floor(self.body:getY()), self.body:getAngle(),
         1, 1, 17.5, 17.5)
+end
+
+function Alien:split()
+    gSounds['split']:play()
+    self.canSplit = false
+    return
 end
