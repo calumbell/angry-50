@@ -17,6 +17,9 @@ function Level:init()
     -- actual collision callbacks can cause stack overflow and other errors
     self.destroyedBodies = {}
 
+    -- flag for storing whether alien has made contact with a body yet 
+    self.contact = false
+
     -- define collision callbacks for our world; the World object expects four,
     -- one for different stages of any given collision
     function beginContact(a, b, coll)
@@ -26,6 +29,9 @@ function Level:init()
 
         -- if we collided between both an alien and an obstacle...
         if types['Obstacle'] and types['Player'] then
+
+            -- flag that player contact has been made
+            self.contact = true
 
             -- destroy the obstacle if player's combined velocity is high enough
             if a:getUserData() == 'Obstacle' then
@@ -68,6 +74,9 @@ function Level:init()
 
         -- if we collided between the player and the alien...
         if types['Player'] and types['Alien'] then
+
+            -- flag that player contact has been made
+            self.contact = true
 
             -- destroy the alien if player is traveling fast enough
             if a:getUserData() == 'Player' then
@@ -191,6 +200,9 @@ function Level:update(dt)
         if xPos < 0 or (math.abs(xVel) + math.abs(yVel) < 1.5) then
             self.launchMarker.alien.body:destroy()
             self.launchMarker = AlienLaunchMarker(self.world)
+
+            -- reset contact flag for next go
+            self.contact = false
 
             -- re-initialize level if we have no more aliens
             if #self.aliens == 0 then
