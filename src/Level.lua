@@ -163,11 +163,10 @@ function Level:update(dt)
     -- split flying alien if the spacebar is pressed and the alien has been launched,
     -- but hasn't made contact with an obstacle or already split
 
-    if love.keyboard.keysPressed['space'] and self.launchMarker.launched and
-        not self.contact then
-            if self.launchMarker.alien.canSplit then
-                self.launchMarker.alien:split()
-            end
+    if love.keyboard.keysPressed['space'] or love.mouse.wasPressed(1) then
+        if  self.launchMarker.launched and not self.contact and self.launchMarker.alien.canSplit then
+            self.launchMarker.alien:split()
+        end
     end
 
     -- destroy all bodies we calculated to destroy during the update call
