@@ -36,16 +36,29 @@ function Alien:init(world, type, x, y, userData)
 
     -- used to keep track of whether the alien has split yet
     self.canSplit = true
+
+    self.children = {}
 end
 
 function Alien:render()
     love.graphics.draw(gTextures['aliens'], gFrames['aliens'][self.sprite],
         math.floor(self.body:getX()), math.floor(self.body:getY()), self.body:getAngle(),
         1, 1, 17.5, 17.5)
+
+    -- render child aliens (spawned via splitting)
+    for k, alien in pairs(self.children) do
+        alien:render()
+    end
 end
 
 function Alien:split()
     gSounds['split']:play()
     self.canSplit = false
+    
+    for i = 1, 2 do
+    self.children[i] = Alien(self.world, self.type, 
+        self.body:getX(), self.body:getY(), 'Player')
+    end
+    
     return
 end

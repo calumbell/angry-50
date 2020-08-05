@@ -207,6 +207,13 @@ function Level:update(dt)
         
         -- if we fired our alien to the left or it's almost done rolling, respawn
         if xPos < 0 or (math.abs(xVel) + math.abs(yVel) < 1.5) then
+
+            -- first destroy any children aliens
+            for k, alien in pairs(self.launchMarker.alien.children) do
+                alien.body:destroy()
+            end
+
+            -- then destroy original alien before reswawping
             self.launchMarker.alien.body:destroy()
             self.launchMarker = AlienLaunchMarker(self.world)
 
