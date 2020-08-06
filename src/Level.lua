@@ -204,10 +204,8 @@ function Level:update(dt)
     if self.launchMarker.launched then
         local xPos, yPos = self.launchMarker.alien.body:getPosition()
         local xVel, yVel = self.launchMarker.alien.body:getLinearVelocity()
-        
-        -- if we fired our alien to the left or it's almost done rolling, respawn
-        if xPos < 0 or (math.abs(xVel) + math.abs(yVel) < 1.5) then
 
+        if self.launchMarker.alien:hasStopped() then
             -- first destroy any children aliens
             for k, alien in pairs(self.launchMarker.alien.children) do
                 alien.body:destroy()

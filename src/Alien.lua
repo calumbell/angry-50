@@ -87,3 +87,30 @@ function Alien:split(dt)
     
     return
 end
+
+
+-- Alien:hasStopped()
+-- Returns true if this alien and all of its children have stopped moving.
+-- Else, returns false
+
+function Alien:hasStopped()
+    local xPos, yPos = self.body:getPosition()
+    local xVel, yVel = self.body:getLinearVelocity()
+
+    -- if we fired our alien to the left or it's almost done rolling
+    if xPos < 0 or (math.abs(xVel) + math.abs(yVel) < 1.5) then
+
+        -- if alien has children, return true if both have also stopped moving
+        if #self.children > 0 then
+            return self.children[1]:hasStopped() 
+                and self.children[2]:hasStopped()
+
+        -- if alien has no children, return true
+        else
+            return true
+        end
+    -- else alien is still moving, return false
+    else
+        return false
+    end 
+end
