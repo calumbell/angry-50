@@ -85,6 +85,8 @@ end
 
 function love.update(dt)
     if not paused then
+        Timer.update(dt)
+        
         gStateMachine:update(dt)
 
         love.keyboard.keysPressed = {}

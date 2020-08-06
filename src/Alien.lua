@@ -31,7 +31,13 @@ function Alien:init(world, type, x, y, userData)
 
     self.fixture = love.physics.newFixture(self.body, self.shape)
 
+    self.fixture:setFriction(0.75)
+
     self.fixture:setUserData(userData)
+
+    if userData == 'Player' then
+        self.fixture:setGroupIndex(-1)
+    end
 
     -- used to keep track of despawning the Alien and flinging it
     self.launched = false
@@ -63,28 +69,30 @@ function Alien:split(dt)
 
     -- get component velocities of parent alien
     local vx, vy = self.body:getLinearVelocity()
-    
+
     -- instantiate 1st alien (heading clockwise from parent)
-    self.children[1] = Alien(self.world, self.type, 
-        self.body:getX() + (self.size * vy/vx * dt),
-        self.body:getY() + (self.size * vx/vy * dt),
-        'Player'
-    )
+    self.children[1] = Alien(self.world, self.type, self.body:getX(), self.body:getY(), 'Player')
 
     -- swaping x & y velocities creates perpendicular motion
     self.children[1].body:setLinearVelocity(vy, vx)
+    self.children[1].sprite = 10
 
     -- instantiate 2nd alien (heading anti-clockwise from parent)
-    self.children[2] = Alien(self.world, self.type, 
-        self.body:getX() - (self.size * vy/vx * dt),
-        self.body:getY() + (self.size * vx/vy * dt),
-        'Player'
-    )
+    self.children[2] = Alien(self.world, self.type, self.body:getX(), self.body:getY(), 'Player')
 
     -- as above, but negate y component for perpendicular motion
     -- in opposite direction
-    self.children[2].body:setLinearVelocity(vy * -1, vx)
+    self.children[2].body:setLinearVelocity(-vy, vx)
+    self.children[2].sprite = 7
     
+    -- Aliens init w/ in group -1 to avoid collisions on spawn
+    -- Reset this to 0 once enough time has passed for them to seperate
+
+    Timer.after(0.2, function()
+        self.children[1].fixture:setGroupIndex(0)
+        self.children[2].fixture:setGroupIndex(0)
+    end)
+
     return
 end
 
@@ -98,7 +106,7 @@ function Alien:hasStopped()
     local xVel, yVel = self.body:getLinearVelocity()
 
     -- if we fired our alien to the left or it's almost done rolling
-    if xPos < 0 or (math.abs(xVel) + math.abs(yVel) < 1.5) then
+    if xPos < 0 or (math.abs(xVel) + math.abs(yVel) < 2) then
 
         -- if alien has children, return true if both have also stopped moving
         if #self.children > 0 then

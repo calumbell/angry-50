@@ -146,7 +146,7 @@ function Level:init()
     -- ground data
     self.groundBody = love.physics.newBody(self.world, -VIRTUAL_WIDTH, VIRTUAL_HEIGHT - 35, 'static')
     self.groundFixture = love.physics.newFixture(self.groundBody, self.edgeShape)
-    self.groundFixture:setFriction(0.5)
+    self.groundFixture:setFriction(0.75)
     self.groundFixture:setUserData('Ground')
 
     -- background graphics
