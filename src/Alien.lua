@@ -18,12 +18,14 @@ function Alien:init(world, type, x, y, userData)
         x or math.random(VIRTUAL_WIDTH), y or math.random(VIRTUAL_HEIGHT - 35),
         'dynamic')
 
+    self.size = 35
+
     -- different shape and sprite based on type passed in
     if self.type == 'square' then
-        self.shape = love.physics.newRectangleShape(35, 35)
+        self.shape = love.physics.newRectangleShape(self.size, self.size)
         self.sprite = math.random(5)
     else
-        self.shape = love.physics.newCircleShape(17.5)
+        self.shape = love.physics.newCircleShape(self.size/2)
         self.sprite = 9
     end
 
@@ -51,14 +53,37 @@ function Alien:render()
     end
 end
 
-function Alien:split()
+
+-- handles alien splitting, creates two child aliens and sets their velocity
+function Alien:split(dt)
     gSounds['split']:play()
+
+    -- disable future spliting
     self.canSplit = false
+
+    -- get component velocities of parent alien
+    local vx, vy = self.body:getLinearVelocity()
     
-    for i = 1, 2 do
-    self.children[i] = Alien(self.world, self.type, 
-        self.body:getX(), self.body:getY(), 'Player')
-    end
+    -- instantiate 1st alien (heading clockwise from parent)
+    self.children[1] = Alien(self.world, self.type, 
+        self.body:getX() + (self.size * vy/vx * dt),
+        self.body:getY() + (self.size * vx/vy * dt),
+        'Player'
+    )
+
+    -- swaping x & y velocities creates perpendicular motion
+    self.children[1].body:setLinearVelocity(vy, vx)
+
+    -- instantiate 2nd alien (heading anti-clockwise from parent)
+    self.children[2] = Alien(self.world, self.type, 
+        self.body:getX() - (self.size * vy/vx * dt),
+        self.body:getY() + (self.size * vx/vy * dt),
+        'Player'
+    )
+
+    -- as above, but negate y component for perpendicular motion
+    -- in opposite direction
+    self.children[2].body:setLinearVelocity(vy * -1, vx)
     
     return
 end

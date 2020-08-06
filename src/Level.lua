@@ -165,7 +165,7 @@ function Level:update(dt)
 
     if love.keyboard.keysPressed['space'] or love.mouse.wasPressed(1) then
         if  self.launchMarker.launched and not self.contact and self.launchMarker.alien.canSplit then
-            self.launchMarker.alien:split()
+            self.launchMarker.alien:split(dt)
         end
     end
 
