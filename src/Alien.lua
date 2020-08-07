@@ -31,7 +31,9 @@ function Alien:init(world, type, x, y, userData)
 
     self.fixture = love.physics.newFixture(self.body, self.shape)
 
-    self.fixture:setFriction(1)
+    self.fixture:setFriction(0.75)
+
+    self.body:setAngularDamping(0.1)
 
     self.fixture:setUserData(userData)
 
@@ -75,7 +77,7 @@ function Alien:split()
     self.children[1] = Alien(self.world, self.type, self.body:getX(), self.body:getY(), 'Player')
 
     -- swaping x & y velocities creates perpendicular motion
-    self.children[1].body:setLinearVelocity(vy, -vx)
+    self.children[1].body:setLinearVelocity(vy/2, -vx/2)
     self.children[1].sprite = 10
 
     -- instantiate 2nd alien (heading anti-clockwise from parent)
@@ -83,7 +85,7 @@ function Alien:split()
 
     -- as above, but negate y component for perpendicular motion
     -- in opposite direction
-    self.children[2].body:setLinearVelocity(-vy, vx)
+    self.children[2].body:setLinearVelocity(-vy/2, vx/2)
     self.children[2].sprite = 7
     
     -- Aliens init w/ in group -1 to avoid collisions on spawn
@@ -106,6 +108,8 @@ function Alien:hasStopped()
     local xPos, yPos = self.body:getPosition()
     local xVel, yVel = self.body:getLinearVelocity()
 
+    self:stopSlowRolling()
+
     -- if we fired our alien to the left or it's almost done rolling
     if xPos < 0 or (math.abs(xVel) + math.abs(yVel) < 1.5) then
 
@@ -123,4 +127,15 @@ function Alien:hasStopped()
     else
         return false
     end 
+end
+
+function Alien:stopSlowRolling()
+    if math.abs(self.body:getAngularVelocity()) < 0.25 then
+        self.body:setAngularVelocity(0)
+    end
+
+    if #self.children > 0 then
+        self.children[1]:stopSlowRolling()
+        self.children[2]:stopSlowRolling()
+    end
 end
