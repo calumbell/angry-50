@@ -31,10 +31,11 @@ function Alien:init(world, type, x, y, userData)
 
     self.fixture = love.physics.newFixture(self.body, self.shape)
 
-    self.fixture:setFriction(0.75)
+    self.fixture:setFriction(1)
 
     self.fixture:setUserData(userData)
 
+    -- set player aliens group to -1 to easily disable collisions w/ children
     if userData == 'Player' then
         self.fixture:setGroupIndex(-1)
     end
@@ -61,7 +62,7 @@ end
 
 
 -- handles alien splitting, creates two child aliens and sets their velocity
-function Alien:split(dt)
+function Alien:split()
     gSounds['split']:play()
 
     -- disable future spliting
@@ -74,7 +75,7 @@ function Alien:split(dt)
     self.children[1] = Alien(self.world, self.type, self.body:getX(), self.body:getY(), 'Player')
 
     -- swaping x & y velocities creates perpendicular motion
-    self.children[1].body:setLinearVelocity(vy, vx)
+    self.children[1].body:setLinearVelocity(vy, -vx)
     self.children[1].sprite = 10
 
     -- instantiate 2nd alien (heading anti-clockwise from parent)
@@ -106,7 +107,7 @@ function Alien:hasStopped()
     local xVel, yVel = self.body:getLinearVelocity()
 
     -- if we fired our alien to the left or it's almost done rolling
-    if xPos < 0 or (math.abs(xVel) + math.abs(yVel) < 2) then
+    if xPos < 0 or (math.abs(xVel) + math.abs(yVel) < 1.5) then
 
         -- if alien has children, return true if both have also stopped moving
         if #self.children > 0 then
@@ -117,6 +118,7 @@ function Alien:hasStopped()
         else
             return true
         end
+
     -- else alien is still moving, return false
     else
         return false

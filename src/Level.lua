@@ -161,11 +161,11 @@ function Level:update(dt)
     self.world:update(dt)
 
     -- split flying alien if the spacebar is pressed and the alien has been launched,
-    -- but hasn't made contact with an obstacle or already split
+    -- but hasn't made contact with an obstacle or has already split
 
     if love.keyboard.keysPressed['space'] or love.mouse.wasPressed(1) then
         if  self.launchMarker.launched and not self.contact and self.launchMarker.alien.canSplit then
-            self.launchMarker.alien:split(dt)
+            self.launchMarker.alien:split()
         end
     end
 
@@ -202,16 +202,16 @@ function Level:update(dt)
 
     -- replace launch marker if original alien stopped moving
     if self.launchMarker.launched then
-        local xPos, yPos = self.launchMarker.alien.body:getPosition()
-        local xVel, yVel = self.launchMarker.alien.body:getLinearVelocity()
 
+        -- check if alien (+ children) have stopped moving
         if self.launchMarker.alien:hasStopped() then
+
             -- first destroy any children aliens
             for k, alien in pairs(self.launchMarker.alien.children) do
                 alien.body:destroy()
             end
 
-            -- then destroy original alien before reswawping
+            -- then destroy original alien before reswawping launcher
             self.launchMarker.alien.body:destroy()
             self.launchMarker = AlienLaunchMarker(self.world)
 
